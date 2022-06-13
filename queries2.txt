@@ -1,0 +1,51 @@
+SELECT * FROM places LIMIT 5;
+SELECT * FROM reviews LIMIT 5;
+
+SELECT name
+FROM places
+WHERE price_point IN ('$', '$$');
+
+-- places.id = reviews.place_id
+
+SELECT *
+FROM places
+JOIN reviews
+ON places.id = reviews.place_id
+WHERE places.type = 'Restaurant';
+
+SELECT places.name, places.average_rating, reviews.username, reviews.rating, reviews.review_date, reviews.note
+FROM places
+JOIN reviews
+ON places.id = reviews.place_id
+WHERE places.type = 'Restaurant';
+
+SELECT places.name, places.average_rating, reviews.username, reviews.rating, reviews.review_date, reviews.note
+FROM places
+LEFT JOIN reviews
+ON places.id = reviews.place_id
+WHERE places.type = 'Restaurant';
+
+SELECT places.id
+FROM places
+LEFT JOIN reviews
+ON places.id = reviews.place_id
+WHERE review_date IS NULL;
+
+WITH reviews2020 AS(
+  SELECT *
+  FROM reviews
+  WHERE strftime('%Y', review_date) = '2020'
+)
+SELECT *
+FROM reviews2020
+JOIN places
+ON places.id = reviews2020.place_id;
+
+SELECT reviews.username, COUNT(*) AS bad_reviews
+FROM reviews
+JOIN places
+ON places.id = reviews.place_id
+WHERE reviews.rating < places.average_rating
+GROUP BY reviews.username
+ORDER BY bad_reviews DESC
+LIMIT 1;
