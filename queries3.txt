@@ -1,0 +1,65 @@
+SELECT * FROM users LIMIT 5;
+SELECT * FROM posts LIMIT 5;
+SELECT * FROM subreddits LIMIT 5;
+
+-- users primary key: id
+-- posts primary key: id; foreign key: user_id, subreddit_id
+-- subreddits primary key: id
+
+SELECT COUNT(DISTINCT name)
+FROM subreddits;
+
+SELECT username
+FROM users
+ORDER BY score DESC
+LIMIT 1;
+SELECT title
+FROM posts
+ORDER BY score DESC
+LIMIT 1;
+SELECT name
+FROM subreddits
+ORDER BY subscriber_count DESC
+LIMIT 5;
+
+SELECT users.username, COUNT(posts.title) AS post_count
+FROM users
+LEFT JOIN posts
+ON posts.user_id = users.id
+GROUP BY users.username
+ORDER BY post_count DESC;
+
+SELECT posts.title
+FROM posts
+JOIN users
+ON users.id = posts.user_id
+WHERE users.id IS NOT NULL;
+
+SELECT *
+FROM posts
+UNION
+SELECT *
+FROM posts2;
+
+WITH popular_posts AS(
+  SELECT *
+  FROM posts
+  WHERE score >= 5000
+)
+SELECT subreddits.name, popular_posts.title, popular_posts.score
+FROM subreddits
+JOIN popular_posts
+ON subreddits.id = popular_posts.subreddit_id
+ORDER BY popular_posts.score DESC;
+
+SELECT subreddits.name, MAX(posts.score) AS highest_scoring_post
+FROM posts
+JOIN subreddits
+ON posts.subreddit_id = subreddits.id
+GROUP BY subreddits.name;
+
+SELECT subreddits.name, AVG(posts.score) AS average_score
+FROM subreddits
+JOIN posts
+ON posts.subreddit_id = subreddits.id
+GROUP BY subreddits.name;
